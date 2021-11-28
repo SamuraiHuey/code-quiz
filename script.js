@@ -1,34 +1,39 @@
 var questions = [
     {
-        question: 'This is question 1',
-        options: ['option 1 of 1', 'option 2 of 1', 'option 3 of 1', 'option 4 of 1'],
-        correct: 'option 1 of 1'
+        question: 'Which language is used to dictate how a website looks?',
+        options: ['JavaScript', 'Python', 'CSS', 'HTML'],
+        correct: 'CSS'
     },
     {
-        question: 'This is question 2',
-        options: ['option 1 of 2', 'option 2 of 2', 'option 3 of 2', 'option 4 of 2'],
-        correct: 'option 2 of 2'
+        question: 'What does an <href> tag do in HTML?',
+        options: ['Gives the HTML component a size value',
+         'Links to a specified URL',
+          'Imports an image',
+           'Downloads a specific file to your local machine'],
+        correct: 'Links to a specified URL'
     },
     {
-        question: 'This is question 3',
-        options: ['option 1 of 3', 'option 2 of 3', 'option 3 of 3', 'option 4 of 3'],
-        correct: 'option 3 of 3'
+        question: 'Which semantic tag should you use for the title of your webpage',
+        options: ['h1', 'h2', 'h3', 'h4'],
+        correct: 'h1'
     },
     {
-        question: 'This is question 4',
-        options: ['option 1 of 4', 'option 2 of 4', 'option 3 of 4', 'option 4 of 4'],
-        correct: 'option 4 of 4'
+        question: 'What is the first command you should enter into the command line to push a Repo to GitHub',
+        options: ['git ready all', 'git this going', 'git add .', 'git ready +'],
+        correct: 'git add .'
     },
     {
-        question: 'This is question 5',
-        options: ['option 1 of 5', 'option 2 of 5', 'option 3 of 5', 'option 4 of 5'],
-        correct: 'option 5 of 5'
+        question: 'Which tag dictates how Chrome represents your site on the Tab',
+        options: ['tab', 'header', 'title', 'top'],
+        correct: 'title'
     }
 ]
 
 var startBtn = document.getElementById('start-button')
 var questionDiv = document.getElementById('question')
 var optionsContainer = document.getElementById('options')
+var timeContainer = document.getElementById('timer')
+var form = document.getElementById('userForm')
 
 var questionIndex = 0
 var score = 0
@@ -36,10 +41,24 @@ var timer = 60
 
 startBtn.addEventListener('click', function() {
     startBtn.setAttribute('class', 'hidden')
+    timerCountdown()
     renderQuestion()
 })
 
 // function to set a time interval for timer
+
+
+function timerCountdown() {
+    var startTimer = setInterval(function() {
+        timeContainer.textContent = timer
+        timer--
+        if (timer < 0 || questionIndex > questions.length - 1) {
+            clearInterval(startTimer)
+            endQuiz()
+            return
+        }
+    },1000)
+}
 
 // function for local storage to save a username and the score that they got
 // check if the key exsists if it doesnt then you want to set it as an empty array.
@@ -47,6 +66,9 @@ startBtn.addEventListener('click', function() {
 function renderQuestion() {
 
     // if statement to check it questions index is greater than the questions.length -1
+    if (questionIndex > questions.length - 1) {
+        return
+    }
 
     questionDiv.textContent = ''
     optionsContainer.textContent = ''
@@ -71,5 +93,37 @@ function renderQuestion() {
             renderQuestion()
         })
     }
+
+}
+
+function endQuiz() {
+    questionDiv.textContent = ''
+    optionsContainer.textContent = ''
+    timeContainer.textContent = ''
+
+    var userInput = document.createElement('input')
+    userInput.setAttribute('placerholder', 'Please enter your name')
+    form.prepend(userInput)
+    
+    var submitBtn = document.createElement('button')
+    submitBtn.textContent = 'Submit'
+    form.append(submitBtn)
+
+    submitBtn.addEventListener('click', function(e) {
+        e.preventDefault()
+        var storage = JSON.parse(localStorage.getItem('highscore'))
+        if (storage === null) {
+            storage = []
+        }
+    
+        var currentUser = {
+            name: userInput.value,
+            currentScore: score
+        }
+    
+        storage.push(currentUser)
+        localStorage.setItem('highscore', JSON.stringify(storage))
+        window.location.href = 'high-score.html'
+    })
 
 }
